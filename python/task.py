@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from lib.YandexAPI import YandexAPI
+from api_lib.YandexAPI import YandexAPI
 
 
 load_dotenv(os.getcwd() + '/.env')
