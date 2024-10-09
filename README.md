@@ -7,6 +7,7 @@
         ```bash
         pip install -r requirements.txt
         cd python
+        echo -e "API_KEY"={ключ к API Яндекс Расписаний} > .env
         chmod ugo+x task.py
         python ./task.py
         ```
