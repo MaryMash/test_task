@@ -38,25 +38,29 @@ FROM
 WHERE rnk < 11;
 
 -- task 4
-with end_day as (select
-	uid,
-    date_trunc('day', stop_dttm),
-    max(stop_dttm) as enddt
-from wifi_session
-group by 1, 2
+with end_day as (
+  select
+      uid,
+      stop_station,
+      DENSE_RANK() over(partition by uid, date_trunc('day', stop_dttm) order by stop_dttm DESC) as rnk
+  from wifi_session
 ),
 cnt_data as (
-  select 
-      t1.uid,
-      t1.stop_station,
+  SELECT
+      uid,
+      stop_station,
       count(*) as cnt
-  from wifi_session as t1
-  left join end_day as t2
-  on t1.uid = t2.uid and t1.stop_dttm = t2.enddt
+  from end_day
+  where rnk = 1
   group by 1, 2
 )
 select
-	t1.uid,
-    t1.stop_station
-from cnt_data t1
-where t1.cnt = (select max(t2.cnt) from cnt_data t2 where t1.uid=t2.uid)
+	uid,
+ 	stop_station
+from (
+  select
+      *,
+      DENSE_RANK() over (PARTITION by uid order by cnt desc) as rnk
+  from cnt_data
+)
+where rnk = 1
